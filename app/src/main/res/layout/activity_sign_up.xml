@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".start.SignUpActivity">
+
+    <ImageView
+        android:id="@+id/imglogo"
+        android:layout_width="112dp"
+        android:layout_height="112dp"
+        android:layout_marginTop="40dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/logo" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/signUpIDLayout1"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="265dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        app:endIconMode="clear_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imglogo">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/signUpID"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="아이디 또는 이메일" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/signUpIDLayout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="265dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        app:endIconMode="clear_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/checkDuplicate">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/signUpName"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="닉네임" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/signUpPasswordLayout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="265dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        app:counterEnabled="true"
+        app:counterMaxLength="12"
+        app:endIconMode="password_toggle"
+        app:errorEnabled="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/signUpIDLayout">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/signUpPassword"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="비밀번호"
+            android:inputType="textPassword" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/checkPwdLayout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="265dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/signUpPasswordLayout"
+        app:endIconMode="password_toggle"
+        app:errorEnabled="true"
+        app:counterEnabled="true"
+        app:counterMaxLength="12">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/checkPwd"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="비밀번호 확인"
+            android:inputType="textPassword"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnAddUser"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="40dp"
+        android:backgroundTint="#000064"
+        android:text="회원가입"
+        android:textColor="#ffffff"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/checkPwdLayout" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/checkDuplicate"
+        android:layout_width="81dp"
+        android:layout_height="20dp"
+        android:background="#000064"
+        android:text="중복 확인"
+        android:textColor="#ffffff"
+        android:textSize="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.919"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/signUpIDLayout1" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

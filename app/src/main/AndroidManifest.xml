@@ -9,10 +9,23 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".ShowCommentActivity"></activity>
+        <activity android:name=".answer.AnswerCommentActivity" />
+        <activity android:name=".question.QuestionCommentActivity" />
+        <activity android:name=".answer.WriteAnswerActivity" />
+        <activity android:name=".question.WriteQuestionActivity" />
+        <activity android:name=".question.ShowQuestionActivity" />
+        <activity android:name=".start.SplashActivity" />
+        <activity
+            android:name=".start.SignUpActivity"
+            android:theme="@style/Material" />
+        <activity
+            android:name=".start.LoginActivity"
+            android:theme="@style/Material" />
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
