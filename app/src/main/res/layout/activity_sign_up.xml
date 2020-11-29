@@ -43,7 +43,7 @@
         app:endIconMode="clear_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/checkDuplicate">
+        app:layout_constraintTop_toBottomOf="@+id/checkDuplicateId">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/signUpName"
@@ -64,7 +64,7 @@
         app:errorEnabled="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/signUpIDLayout">
+        app:layout_constraintTop_toBottomOf="@+id/checkDuplicateNickName">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/signUpPassword"
@@ -111,7 +111,7 @@
         app:layout_constraintTop_toBottomOf="@+id/checkPwdLayout" />
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/checkDuplicate"
+        android:id="@+id/checkDuplicateId"
         android:layout_width="81dp"
         android:layout_height="20dp"
         android:background="#000064"
@@ -119,8 +119,21 @@
         android:textColor="#ffffff"
         android:textSize="12dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.919"
+        app:layout_constraintHorizontal_bias="0.9"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/signUpIDLayout1" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/checkDuplicateNickName"
+        android:layout_width="81dp"
+        android:layout_height="20dp"
+        android:background="#000064"
+        android:text="중복 확인"
+        android:textColor="#ffffff"
+        android:textSize="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.9"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/signUpIDLayout" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
