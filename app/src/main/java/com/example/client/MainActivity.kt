@@ -46,10 +46,7 @@ class MainActivity : AppCompatActivity() {
             ), drawerLayout
         )
 
-        val header = navView.getHeaderView(0)
-
-        header.sideEmailText.text = getEmail()
-        header.sideNickNameText.text = getNickName()
+        setText()
 
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
@@ -73,5 +70,13 @@ class MainActivity : AppCompatActivity() {
     private fun getNickName() : String?{
         val sp = getSharedPreferences("user", MODE_PRIVATE)
         return sp.getString("name", "")
+    }
+
+    private fun setText(){
+        val navView: NavigationView = findViewById(R.id.nav_view)
+        val header = navView.getHeaderView(0)
+
+        header.sideEmailText.text = getEmail()
+        header.sideNickNameText.text = getNickName()
     }
 }

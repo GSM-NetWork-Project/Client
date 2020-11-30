@@ -38,11 +38,14 @@ class SignUpActivity : AppCompatActivity() {
                         response: Response<GetResponse<UserResponse>>
                     ) {
                         if (response.isSuccessful) {
-                            isDuplicateEmail = response.body()!!.result.size > 0
+                            isDuplicateEmail = response.body()!!.status == 200
                             signUpIDLayout.error = if (isDuplicateEmail) {
                                 "중복된 이메일입니다"
                             } else {
                                 null
+                            }
+                            if (!isDuplicateEmail){
+                                Toast.makeText(this@SignUpActivity, "사용 가능한 이메일 입니다", Toast.LENGTH_LONG).show()
                             }
                         }
                     }
@@ -62,11 +65,14 @@ class SignUpActivity : AppCompatActivity() {
                         response: Response<GetResponse<UserResponse>>
                     ) {
                         if (response.isSuccessful) {
-                            isDuplicateNickname = response.body()!!.result.size > 0
+                            isDuplicateNickname = response.body()!!.status == 200
                             signUpNameLayout.error = if (isDuplicateNickname) {
                                 "중복된 닉네임입니다"
                             } else {
                                 null
+                            }
+                            if (!isDuplicateNickname){
+                                Toast.makeText(this@SignUpActivity, "사용 가능한 닉네임 입니다", Toast.LENGTH_LONG).show()
                             }
                         }
                     }
@@ -96,7 +102,7 @@ class SignUpActivity : AppCompatActivity() {
                     RetrofitHelper().getAddAPI().addUser(
                         name = signUpName.text.toString(),
                         email = signUpID.text.toString(),
-                        password = passwordText.text.toString()
+                        password = checkPwd.text.toString()
                     ).enqueue(object : Callback<Status> {
                         override fun onResponse(call: Call<Status>, response: Response<Status>) {
                             if (response.isSuccessful) {
@@ -146,7 +152,7 @@ class SignUpActivity : AppCompatActivity() {
     fun showFailDialog(sweetAlertDialog: SweetAlertDialog, title : String){
         sweetAlertDialog.dismiss()
 
-        val dialog = SweetAlertDialog(this@SignUpActivity, SweetAlertDialog.SUCCESS_TYPE)
+        val dialog = SweetAlertDialog(this@SignUpActivity, SweetAlertDialog.ERROR_TYPE)
 
         dialog.setCancelable(false)
 
@@ -164,12 +170,13 @@ class SignUpActivity : AppCompatActivity() {
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun afterTextChanged(p0: Editable?) {
-                if(checkPwd.text.toString() != passwordText.text.toString()){
+                if (checkPwd.text.toString() != signUpPassword.text.toString()) {
                     checkPwdLayout.error = "비밀번호가 같지 않습니다"
                 } else {
                     checkPwdLayout.error = null
                 }
             }
+
 
         })
     }

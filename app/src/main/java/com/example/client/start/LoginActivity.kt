@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.client.MainActivity
 import com.example.client.R
@@ -38,7 +39,7 @@ class LoginActivity : AppCompatActivity() {
                     response: Response<GetResponse<UserResponse>>
                 ) {
                     if(response.isSuccessful){
-                        if(response.body()!!.result.size > 0){
+                        if(response.body()!!.status == 200){
                             sweetAlertDialog.dismiss()
 
                             val dialog = SweetAlertDialog(this@LoginActivity, SweetAlertDialog.SUCCESS_TYPE)
@@ -54,11 +55,14 @@ class LoginActivity : AppCompatActivity() {
                                     finish()
                                 }
                                 .show()
+                        } else {
+                            showFailDialog(sweetAlertDialog)
                         }
                     }
                 }
 
                 override fun onFailure(call: Call<GetResponse<UserResponse>>, t: Throwable) {
+                    Log.d("TEST", t.toString())
                     showFailDialog(sweetAlertDialog)
                 }
 
@@ -70,7 +74,7 @@ class LoginActivity : AppCompatActivity() {
     fun showFailDialog(sweetAlertDialog: SweetAlertDialog){
         sweetAlertDialog.dismiss()
 
-        val dialog = SweetAlertDialog(this@LoginActivity, SweetAlertDialog.SUCCESS_TYPE)
+        val dialog = SweetAlertDialog(this@LoginActivity, SweetAlertDialog.ERROR_TYPE)
 
         dialog.setCancelable(false)
 

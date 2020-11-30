@@ -13,6 +13,7 @@ import com.example.client.api.DTO.GetResponse
 import com.example.client.api.DTO.QuestionResponse
 import com.example.client.api.RetrofitHelper
 import com.example.client.question.QuestionAdapter
+import com.example.client.question.ShowQuestionActivity
 import com.example.client.question.WriteQuestionActivity
 import kotlinx.android.synthetic.main.fragment_slideshow.*
 import kotlinx.android.synthetic.main.fragment_slideshow.view.*
@@ -21,6 +22,8 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class SlideshowFragment : Fragment() {
+
+    var arrayList = ArrayList<QuestionResponse>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,19 +34,33 @@ class SlideshowFragment : Fragment() {
 
         val items = resources.getStringArray(R.array.my_array)
 
+        setHasOptionsMenu(true)
+
         root.themeSpinner.adapter =
             context?.let { ArrayAdapter(it, android.R.layout.simple_spinner_dropdown_item, items) }
 
         root.themeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                setList(items[position])
+               // setList(items[position])
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                setList()
+               // setList()
             }
-
         }
+
+        root.askList.onItemClickListener =
+            AdapterView.OnItemClickListener { parent, view, position, long ->
+                val intent = Intent(context, ShowQuestionActivity::class.java)
+                intent.putExtra("question_id", arrayList[position].id)
+                intent.putExtra("owner_id", arrayList[position].owner_id)
+                intent.putExtra("title", arrayList[position].title)
+                intent.putExtra("theme", arrayList[position].theme)
+                intent.putExtra("text", arrayList[position].text)
+                intent.putExtra("is_solved", arrayList[position].is_solved)
+                intent.putExtra("upload_time",arrayList[position].upload_time)
+                startActivity(intent)
+            }
 
         root.write_question.setOnClickListener {
             startActivity(Intent(activity, WriteQuestionActivity::class.java))
@@ -54,14 +71,13 @@ class SlideshowFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.main, menu)
 
         val search = menu.findItem(R.id.action_search)
         val searchView : SearchView = search.actionView as SearchView
         searchView.queryHint = "제목 검색"
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(s: String?): Boolean {
-
+                setListWithTitle(s!!)
                 return false
             }
 
@@ -79,7 +95,12 @@ class SlideshowFragment : Fragment() {
                 response: Response<GetResponse<QuestionResponse>>
             ) {
                 if(response.isSuccessful){
-                    askList.adapter = context?.let { QuestionAdapter(it, response.body()!!.result) }
+                    if(response.body()!!.status == 200) {
+
+                        arrayList = response.body()!!.result
+                        askList.adapter =
+                            context?.let { QuestionAdapter(it, response.body()!!.result) }
+                    }
                 }
             }
 
@@ -96,7 +117,28 @@ class SlideshowFragment : Fragment() {
                 call: Call<GetResponse<QuestionResponse>>,
                 response: Response<GetResponse<QuestionResponse>>
             ) {
+                if(response.body()!!.status == 200) {
+
+                    arrayList = response.body()!!.result
+                    askList.adapter =
+                        context?.let { QuestionAdapter(it, response.body()!!.result) }
+                }
+            }
+
+            override fun onFailure(call: Call<GetResponse<QuestionResponse>>, t: Throwable) {
+                Log.d("Test", t.toString())
+            }
+
+        })
+    }
+    fun setListWithTitle(title : String){
+        RetrofitHelper().getGetAPI().getQuestion(title = title).enqueue(object : Callback<GetResponse<QuestionResponse>>{
+            override fun onResponse(
+                call: Call<GetResponse<QuestionResponse>>,
+                response: Response<GetResponse<QuestionResponse>>
+            ) {
                 if(response.isSuccessful){
+                    arrayList = response.body()!!.result
                     askList.adapter = context?.let { QuestionAdapter(it, response.body()!!.result) }
                 }
             }
