@@ -16,9 +16,9 @@ interface ModifyAPI {
     @GET("api/modify_question")
     fun modifyQuestion(
         @Query("where_owner_id") owner_id : Int,
-        @Query("set_title") title : String,
-        @Query("set_theme") theme : String,
-        @Query("set_text") text : String
+        @Query("set_title") title : String? = null,
+        @Query("set_theme") theme : String? = null,
+        @Query("set_text") text : String? = null
     ) : Call<Status>
 
     @GET("api/modify_answer")

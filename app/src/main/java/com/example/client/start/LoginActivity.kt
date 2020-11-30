@@ -49,7 +49,7 @@ class LoginActivity : AppCompatActivity() {
                                 .setConfirmClickListener {
                                     dialog.dismiss()
                                     val intent = Intent(this@LoginActivity, MainActivity::class.java)
-                                    intent.putExtra("id",response.body()!!.result[0].id)
+                                    setUser(response.body()!!.result[0])
                                     startActivity(intent)
                                     finish()
                                 }
@@ -79,5 +79,15 @@ class LoginActivity : AppCompatActivity() {
                 dialog.dismiss()
             }
             .show()
+    }
+
+    fun setUser(userResponse: UserResponse){
+        val pref = getSharedPreferences("user", MODE_PRIVATE)
+        val editor = pref.edit()
+        editor.putInt("id", userResponse.id)
+        editor.putString("name", userResponse.name)
+        editor.putString("email", userResponse.email)
+        editor.putString("pwd", userResponse.password)
+        editor.apply()
     }
 }

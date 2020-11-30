@@ -1,6 +1,8 @@
 package com.example.client
 
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -13,6 +15,15 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import com.example.client.api.DTO.GetResponse
+import com.example.client.api.DTO.UserResponse
+import com.example.client.api.RetrofitHelper
+import com.example.client.ui.home.HomeFragment
+import com.example.client.ui.slideshow.SlideshowFragment
+import kotlinx.android.synthetic.main.nav_header_main.view.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
 
@@ -31,9 +42,15 @@ class MainActivity : AppCompatActivity() {
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_home, R.id.nav_slideshow
+                R.id.nav_home, R.id.nav_slideshow, R.id.nav_setting
             ), drawerLayout
         )
+
+        val header = navView.getHeaderView(0)
+
+        header.sideEmailText.text = getEmail()
+        header.sideNickNameText.text = getNickName()
+
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
     }
@@ -47,5 +64,14 @@ class MainActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    }
+
+    private fun getEmail() : String?{
+        val sp = getSharedPreferences("user", MODE_PRIVATE)
+        return sp.getString("email", "")
+    }
+    private fun getNickName() : String?{
+        val sp = getSharedPreferences("user", MODE_PRIVATE)
+        return sp.getString("name", "")
     }
 }

@@ -7,10 +7,14 @@
         <item
             android:id="@+id/nav_home"
             android:icon="@drawable/ic_menu_camera"
-            android:title="@string/menu_home" />
+            android:title="내 정보" />
         <item
             android:id="@+id/nav_slideshow"
             android:icon="@drawable/ic_menu_slideshow"
-            android:title="@string/menu_slideshow" />
+            android:title="질문" />
+        <item
+            android:id="@+id/nav_setting"
+            android:icon="@drawable/ic_menu_slideshow"
+            android:title="설정" />
     </group>
 </menu>
