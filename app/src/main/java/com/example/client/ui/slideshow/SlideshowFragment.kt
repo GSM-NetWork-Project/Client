@@ -41,11 +41,11 @@ class SlideshowFragment : Fragment() {
 
         root.themeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-               // setList(items[position])
+                setList(items[position])
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
-               // setList()
+                setList("상식")
             }
         }
 
@@ -77,35 +77,16 @@ class SlideshowFragment : Fragment() {
         searchView.queryHint = "제목 검색"
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(s: String?): Boolean {
-                setListWithTitle(s!!)
+                if (s != null) {
+                    if(s.isNotEmpty()) {
+                        setListWithTitle(s)
+                    }
+                }
                 return false
             }
 
             override fun onQueryTextChange(p0: String?): Boolean {
                 return false
-            }
-
-        })
-    }
-
-    fun setList(){
-        RetrofitHelper().getGetAPI().getQuestion().enqueue(object : Callback<GetResponse<QuestionResponse>>{
-            override fun onResponse(
-                call: Call<GetResponse<QuestionResponse>>,
-                response: Response<GetResponse<QuestionResponse>>
-            ) {
-                if(response.isSuccessful){
-                    if(response.body()!!.status == 200) {
-
-                        arrayList = response.body()!!.result
-                        askList.adapter =
-                            context?.let { QuestionAdapter(it, response.body()!!.result) }
-                    }
-                }
-            }
-
-            override fun onFailure(call: Call<GetResponse<QuestionResponse>>, t: Throwable) {
-                Log.d("Test", t.toString())
             }
 
         })
@@ -119,9 +100,12 @@ class SlideshowFragment : Fragment() {
             ) {
                 if(response.body()!!.status == 200) {
 
+
                     arrayList = response.body()!!.result
                     askList.adapter =
                         context?.let { QuestionAdapter(it, response.body()!!.result) }
+                } else {
+                    askList.adapter = null
                 }
             }
 
@@ -138,8 +122,16 @@ class SlideshowFragment : Fragment() {
                 response: Response<GetResponse<QuestionResponse>>
             ) {
                 if(response.isSuccessful){
-                    arrayList = response.body()!!.result
-                    askList.adapter = context?.let { QuestionAdapter(it, response.body()!!.result) }
+                    if(response.body()!!.status == 200) {
+                        arrayList = response.body()!!.result
+                        askList.adapter =
+                            context?.let { QuestionAdapter(it, response.body()!!.result) }
+                    } else {
+                        askList.adapter = null
+                    }
+                }
+                else {
+                    askList.adapter = null
                 }
             }
 

@@ -51,7 +51,10 @@
             android:layout_marginRight="20dp"
             android:background="@drawable/back_question_answer"
             android:textColor="#000000"
-            android:textSize="18dp" />
+            android:textSize="18dp"
+            android:maxLines="1"
+            android:maxEms="20"
+            android:hint="제목은 20자 이내로 작성해주세요"/>
 
         <EditText
             android:id="@+id/input_question_text"
@@ -61,6 +64,9 @@
             android:layout_marginTop="20dp"
             android:layout_marginRight="20dp"
             android:layout_weight="1"
+            android:hint="250자 제한이 되어있습니다"
+            android:gravity="top"
+            android:layout_gravity="top"
             android:maxLines="22"
             android:background="@drawable/back_question_answer" />
 
