@@ -6,7 +6,7 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface ModifyAPI {
-    @GET("/api/modify_user")
+    @GET("api/modify_user")
     fun modifyUser(
         @Query("where_id") id : Int,
         @Query("set_name") name : String? = null,
@@ -15,6 +15,7 @@ interface ModifyAPI {
 
     @GET("api/modify_question")
     fun modifyQuestion(
+        @Query("where_id") id : Int,
         @Query("where_owner_id") owner_id : Int,
         @Query("set_title") title : String? = null,
         @Query("set_theme") theme : String? = null,

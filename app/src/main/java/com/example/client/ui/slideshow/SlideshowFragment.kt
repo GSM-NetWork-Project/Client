@@ -69,6 +69,11 @@ class SlideshowFragment : Fragment() {
         return root
     }
 
+    override fun onResume() {
+        super.onResume()
+        setList("상식")
+    }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
 
@@ -98,14 +103,16 @@ class SlideshowFragment : Fragment() {
                 call: Call<GetResponse<QuestionResponse>>,
                 response: Response<GetResponse<QuestionResponse>>
             ) {
-                if(response.body()!!.status == 200) {
+                if(response.isSuccessful) {
+                    if (response.body()!!.status == 200) {
 
 
-                    arrayList = response.body()!!.result
-                    askList.adapter =
-                        context?.let { QuestionAdapter(it, response.body()!!.result) }
-                } else {
-                    askList.adapter = null
+                        arrayList = response.body()!!.result
+                        askList.adapter =
+                            context?.let { QuestionAdapter(it, response.body()!!.result) }
+                    } else {
+                        askList.adapter = null
+                    }
                 }
             }
 

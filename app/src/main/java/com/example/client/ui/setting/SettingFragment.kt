@@ -88,7 +88,7 @@ class SettingFragment : Fragment() {
 
                                                     doneDialog.setCancelable(false)
 
-                                                    doneDialog.setTitleText("삭제가 완료 되었습니다")
+                                                    doneDialog.setTitleText("탈퇴가 완료 되었습니다")
                                                         .setConfirmClickListener {
                                                             doneDialog.dismiss()
                                                             val intent =

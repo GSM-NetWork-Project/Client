@@ -10,7 +10,7 @@ import retrofit2.create
 
 class RetrofitHelper {
     val retrofit: Retrofit = Retrofit.Builder()
-        .baseUrl("http://f10cc5cb776f.ngrok.io")
+        .baseUrl("http://2e27ac460c85.ngrok.io/")
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 

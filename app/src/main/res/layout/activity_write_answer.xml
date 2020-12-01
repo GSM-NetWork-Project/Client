@@ -50,17 +50,22 @@
     <TextView
         android:id="@+id/text_question"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
-        android:textSize="14dp"
-        android:layout_margin="20dp"/>
+        android:layout_height="200dp"
+        android:layout_margin="20dp"
+        android:background="@drawable/back_question_answer"
+        android:textColor="#000000"
+        android:textSize="14dp" />
 
     <EditText
         android:id="@+id/write_answer_text"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:maxLines="22"
+        android:gravity="top"
         android:layout_marginTop="20dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:layout_marginBottom="80dp"/>
+        android:layout_marginBottom="80dp"
+        android:hint="250자 제한이 되어있습니다"
+        android:background="@drawable/back_question_answer"/>
 </LinearLayout>

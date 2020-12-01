@@ -1,5 +1,6 @@
 package com.example.client.question
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -24,6 +25,9 @@ class WriteQuestionActivity : AppCompatActivity() {
         var theme = "상식"
 
         val items = resources.getStringArray(R.array.my_array)
+
+        input_question_text.setText(intent.getStringExtra("text"))
+        input_question_title.setText(intent.getStringExtra("title"))
 
         spinner.adapter = ArrayAdapter(this@WriteQuestionActivity, android.R.layout.simple_spinner_dropdown_item, items)
 
@@ -60,9 +64,21 @@ class WriteQuestionActivity : AppCompatActivity() {
                     }
                     .show()
                 return@setOnClickListener
-            } else {
+            }else if(input_question_title.text.toString().isEmpty() || input_question_text.text.toString().isEmpty()){
+                val dialog = SweetAlertDialog(this@WriteQuestionActivity, SweetAlertDialog.ERROR_TYPE)
+
+                dialog.setCancelable(false)
+
+                dialog.setTitleText("빈칸이 없는지 확인해주세요!")
+                    .setConfirmClickListener {
+                        dialog.dismiss()
+                    }
+                    .show()
+                return@setOnClickListener
+            }
+            else {
                 if(intent.getBooleanExtra("isModify",false)){
-                    RetrofitHelper().getModifyAPI().modifyQuestion(getID(), input_question_title.text.toString(), theme, input_question_text.text.toString()).enqueue(object : Callback<Status> {
+                    RetrofitHelper().getModifyAPI().modifyQuestion(intent.getIntExtra("id",0),getID(), input_question_title.text.toString(), theme, input_question_text.text.toString()).enqueue(object : Callback<Status> {
                         override fun onResponse(call: Call<Status>, response: Response<Status>) {
                             if (response.isSuccessful) {
                                 if (response.body()!!.status == 200) {
@@ -75,6 +91,11 @@ class WriteQuestionActivity : AppCompatActivity() {
 
                                     dialog.setTitleText("수정에 성공하였습니다")
                                         .setConfirmClickListener {
+                                            val intent = Intent(this@WriteQuestionActivity, ShowQuestionActivity::class.java)
+                                            intent.putExtra("title", input_question_title.text.toString())
+                                            intent.putExtra("text", input_question_text.text.toString())
+                                            intent.putExtra("owner_id", getID())
+                                            setResult(0,intent)
                                             finish()
                                             dialog.dismiss()
                                         }

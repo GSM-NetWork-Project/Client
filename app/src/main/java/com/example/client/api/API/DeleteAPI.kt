@@ -6,7 +6,7 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface DeleteAPI {
-    @GET("/api/remove_user")
+    @GET("api/remove_user")
     fun deleteUser(
         @Query("id") id : Int,
         @Query("name") name : String,
@@ -19,7 +19,7 @@ interface DeleteAPI {
         @Query("id") id : Int,
         @Query("owner_id") owner_id : Int,
         @Query("title") title : String,
-        @Query("theme") theme : String,
+        @Query("text") text : String,
         @Query("is_solved") is_solved : Int
     ) : Call<Status>
 
@@ -46,11 +46,13 @@ interface DeleteAPI {
 
     @GET("api/remove_question_vote")
     fun deleteQuestionVote(
-        @Query("question_id") question_id : Int
+        @Query("question_id") question_id : Int,
+        @Query("owner_id") owner_id: Int
     ) : Call<Status>
 
     @GET("api/remove_answer_vote")
     fun deleteAnswerVote(
-        @Query("answer_id") answer_id : Int
+        @Query("answer_id") answer_id : Int,
+        @Query("owner_id") owner_id: Int
     ) : Call<Status>
 }

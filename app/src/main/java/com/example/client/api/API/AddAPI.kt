@@ -7,7 +7,7 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface AddAPI {
-    @GET("/api/add_user")
+    @GET("api/add_user")
     fun addUser(
         @Query("name") name : String,
         @Query("email") email : String,

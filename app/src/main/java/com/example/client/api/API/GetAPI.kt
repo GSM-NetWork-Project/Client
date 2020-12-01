@@ -6,7 +6,7 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface GetAPI {
-    @GET("/api/get_user")
+    @GET("api/get_user")
     fun getUser(
         @Query("id") id : Int? = null,
         @Query("name") name : String? = null,
