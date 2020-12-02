@@ -11,8 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.client.dialog.ChangeNickName
 import com.example.client.R
-import com.example.client.ShowMyActivity
-import com.example.client.question.ShowQuestionActivity
+import com.example.client.my.ShowMyActivity
 import com.example.client.start.LoginActivity
 import kotlinx.android.synthetic.main.fragment_home.view.*
 
@@ -45,16 +44,19 @@ class HomeFragment : Fragment() {
         root.go_show_my_question.setOnClickListener {
             val intent = Intent(context, ShowMyActivity::class.java)
             intent.putExtra("type", "내 질문 보기")
+            startActivity(intent)
         }
 
         root.go_show_my_answer.setOnClickListener {
             val intent = Intent(context, ShowMyActivity::class.java)
             intent.putExtra("type", "내 답변 보기")
+            startActivity(intent)
         }
 
         root.go_show_my_comment.setOnClickListener {
             val intent = Intent(context, ShowMyActivity::class.java)
             intent.putExtra("type", "내 댓글 보기")
+            startActivity(intent)
         }
 
         return root
