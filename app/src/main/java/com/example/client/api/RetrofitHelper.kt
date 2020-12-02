@@ -4,13 +4,23 @@ import com.example.client.api.API.AddAPI
 import com.example.client.api.API.DeleteAPI
 import com.example.client.api.API.GetAPI
 import com.example.client.api.API.ModifyAPI
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.create
+import java.util.concurrent.TimeUnit
+
 
 class RetrofitHelper {
+
+    var okHttpClient = OkHttpClient.Builder()
+        .connectTimeout(1, TimeUnit.MINUTES)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .writeTimeout(15, TimeUnit.SECONDS)
+        .build()
+
     val retrofit: Retrofit = Retrofit.Builder()
-        .baseUrl("http://2e27ac460c85.ngrok.io/")
+        .baseUrl("http://c379c2cc8cb9.ngrok.io/")
+        .client(okHttpClient)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 

@@ -10,17 +10,19 @@
     <TextView
         android:id="@+id/comment_nickname"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="TextView"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:text="shin"
         tools:layout_editor_absoluteX="66dp"
         tools:layout_editor_absoluteY="43dp" />
 
     <TextView
         android:id="@+id/comment"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_marginTop="5dp"
-        android:text="TextView"
+        android:layout_weight="1"
+        android:text="Test"
         android:textSize="18dp"
         tools:layout_editor_absoluteX="188dp"
         tools:layout_editor_absoluteY="228dp" />

@@ -20,7 +20,6 @@ class SplashActivity : AppCompatActivity() {
         setContentView(R.layout.activity_splash)
 
         Handler().postDelayed({
-            if(getConnectionState(this@SplashActivity)) {
                 if (getID() == 0) {
                     startActivity(Intent(this@SplashActivity, LoginActivity::class.java))
                     finish()
@@ -28,10 +27,6 @@ class SplashActivity : AppCompatActivity() {
                     startActivity(Intent(this@SplashActivity, MainActivity::class.java))
                     finish()
                 }
-            } else {
-                Toast.makeText(this@SplashActivity, "인터넷 연결을 확인해주세요!", Toast.LENGTH_LONG).show()
-                finish()
-            }
         }, 3000)
     }
     private fun getID() : Int{
@@ -39,21 +34,4 @@ class SplashActivity : AppCompatActivity() {
         return sp.getInt("id", 0)
     }
 
-    private fun getConnectionState(context: Context) : Boolean{
-        val manager = context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
-        val builder = NetworkRequest.Builder()
-        var isConnect = true
-        manager.registerNetworkCallback(builder.build(), object : NetworkCallback() {
-            override fun onAvailable(network: Network) {
-                isConnect = true
-            }
-
-            override fun onLost(network: Network) {
-                isConnect = false
-            }
-        })
-
-        return isConnect
-
-    }
 }

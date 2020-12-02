@@ -3,7 +3,7 @@
     package="com.example.client">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -13,7 +13,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ShowMyActivity"></activity>
+        <activity android:name=".question.ShowQuestionCommentActivity"></activity>
+        <activity android:name=".answer.ShowAnswerCommentActivity" />
+        <activity android:name=".ShowMyActivity" />
         <activity android:name=".ShowCommentActivity" />
         <activity android:name=".answer.AnswerCommentActivity" />
         <activity android:name=".question.QuestionCommentActivity" />

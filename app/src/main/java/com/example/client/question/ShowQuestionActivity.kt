@@ -1,7 +1,6 @@
 package com.example.client.question
 
 import android.content.Intent
-import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -10,12 +9,10 @@ import android.widget.Toast
 import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.client.MainActivity
 import com.example.client.R
-import com.example.client.ShowCommentActivity
 import com.example.client.answer.AnswerAdapter
 import com.example.client.answer.WriteAnswerActivity
 import com.example.client.api.DTO.*
 import com.example.client.api.RetrofitHelper
-import com.example.client.start.LoginActivity
 import kotlinx.android.synthetic.main.activity_show_question.*
 import kotlinx.android.synthetic.main.activity_write_answer.*
 import retrofit2.Call
@@ -59,6 +56,7 @@ class ShowQuestionActivity : AppCompatActivity() {
             }
         } else {
             write_answer.visibility = View.GONE
+
             btn_modify_question.setOnClickListener {
                 val intent = Intent(this@ShowQuestionActivity, WriteQuestionActivity::class.java)
                 intent.putExtra("id", id)
@@ -68,6 +66,7 @@ class ShowQuestionActivity : AppCompatActivity() {
                 intent.putExtra("isModify", true)
                 startActivityForResult(intent, 0)
             }
+
             btn_delete_question.setOnClickListener {
 
                 RetrofitHelper().getDeleteAPI().deleteQuestion(intent.getIntExtra("question_id", 0), getID(), title_question.text.toString(),question_text.text.toString(), intent.getIntExtra("is_solved",0)).enqueue(object : Callback<Status>{
@@ -103,10 +102,8 @@ class ShowQuestionActivity : AppCompatActivity() {
                     }
 
                 })
-
             }
         }
-
 
         up_vote_question.setOnClickListener {
             Log.d("TEST", isVote.toString())
@@ -139,23 +136,22 @@ class ShowQuestionActivity : AppCompatActivity() {
 
         btnWriteComment.setOnClickListener {
             val intent = Intent(this@ShowQuestionActivity, QuestionCommentActivity::class.java)
+            intent.putExtra("title", title_question.text.toString())
+            intent.putExtra("text", question_text.text.toString())
             intent.putExtra("owner_id", getID())
             intent.putExtra("question_id", id)
             startActivity(intent)
         }
 
         btnShowComment.setOnClickListener {
-            val intent = Intent(this@ShowQuestionActivity, ShowCommentActivity::class.java)
-            intent.putExtra("owner_id", getID())
+            val intent = Intent(this@ShowQuestionActivity, ShowQuestionCommentActivity::class.java)
+            intent.putExtra("title", title_question.text.toString())
+            intent.putExtra("text", question_text.text.toString())
             intent.putExtra("question_id", id)
             startActivity(intent)
         }
 
         setVote()
-
-
-
-
     }
 
     fun showFailDialog(){

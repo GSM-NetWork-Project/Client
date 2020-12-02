@@ -24,7 +24,7 @@
             android:textSize="18dp"/>
 
         <LinearLayout
-            android:id="@+id/btn_write_comment"
+            android:id="@+id/btn_write_comment_answer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
@@ -51,16 +51,19 @@
         android:layout_width="match_parent"
         android:layout_height="250dp"
         android:layout_margin="20dp"
-        android:textSize="14dp" />
+        android:textSize="14dp"
+        android:background="@drawable/back_question_answer"/>
 
     <EditText
         android:id="@+id/write_comment_answer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="82dp"
         android:layout_marginLeft="20dp"
         android:layout_marginTop="20dp"
         android:layout_marginRight="20dp"
         android:layout_marginBottom="80dp"
+        android:inputType="text"
+        android:background="@drawable/back_question_answer"
         android:maxLines="22" />
 
 </LinearLayout>

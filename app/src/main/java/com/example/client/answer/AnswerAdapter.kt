@@ -10,9 +10,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.Toast
 import cn.pedant.SweetAlert.SweetAlertDialog
-import com.example.client.MainActivity
 import com.example.client.R
-import com.example.client.ShowCommentActivity
 import com.example.client.api.DTO.*
 import com.example.client.api.RetrofitHelper
 import kotlinx.android.synthetic.main.activity_show_question.*
@@ -146,15 +144,16 @@ class AnswerAdapter(val context : Context, private val arrayList: ArrayList<Answ
         })
 
         view.btnShowComment_answer.setOnClickListener {
-            val intent = Intent(context, ShowCommentActivity::class.java)
+            val intent = Intent(context, ShowAnswerCommentActivity::class.java)
+            intent.putExtra("owner_id", userID)
             intent.putExtra("answer_id", arrayList[position].id)
+            intent.putExtra("text", arrayList[position].text)
             context.startActivity(intent)
         }
 
         view.btnWriteComment_answer.setOnClickListener {
             val intent = Intent(context, AnswerCommentActivity::class.java)
             intent.putExtra("answer_id", arrayList[position].id)
-            intent.putExtra("owner_id", userID)
             intent.putExtra("text", arrayList[position].text)
             context.startActivity(intent)
         }
