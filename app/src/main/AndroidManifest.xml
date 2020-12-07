@@ -13,10 +13,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".question.ShowQuestionCommentActivity"></activity>
+        <activity android:name=".question.ShowQuestionCommentActivity"/>
         <activity android:name=".answer.ShowAnswerCommentActivity" />
         <activity android:name=".my.ShowMyActivity" />
-        <activity android:name=".ShowCommentActivity" />
         <activity android:name=".answer.AnswerCommentActivity" />
         <activity android:name=".question.QuestionCommentActivity" />
         <activity android:name=".answer.WriteAnswerActivity" />
