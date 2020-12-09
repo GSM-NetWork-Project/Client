@@ -218,6 +218,24 @@ class ShowQuestionActivity : AppCompatActivity() {
 
     private fun setList(){
         var arrayList = ArrayList<AnswerResponse>()
+
+        RetrofitHelper().getGetAPI().getQuestion(id = intent.getIntExtra("question_id",0)).enqueue(object : Callback<GetResponse<QuestionResponse>>{
+            override fun onResponse(
+                call: Call<GetResponse<QuestionResponse>>,
+                response: Response<GetResponse<QuestionResponse>>
+            ) {
+                if(response.isSuccessful){
+                    if(response.body()!!.status == 200) {
+                        title_question.text = response.body()!!.result[0].title
+                        question_text.text = response.body()!!.result[0].text
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<GetResponse<QuestionResponse>>, t: Throwable) {}
+
+        })
+
         RetrofitHelper().getGetAPI().getAnswer(question_id = intent.getIntExtra("question_id",0)).enqueue(object : Callback<GetResponse<AnswerResponse>>{
             override fun onResponse(
                 call: Call<GetResponse<AnswerResponse>>,
