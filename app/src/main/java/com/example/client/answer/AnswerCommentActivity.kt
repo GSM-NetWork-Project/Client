@@ -6,8 +6,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.EditText
+import android.widget.Toast
 import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.client.R
+import com.example.client.api.DTO.GetResponse
 import com.example.client.api.DTO.Status
 import com.example.client.api.RetrofitHelper
 import com.example.client.question.ShowQuestionCommentActivity
@@ -26,8 +28,13 @@ class AnswerCommentActivity : AppCompatActivity() {
         write_comment_answer.setText(intent.getStringExtra("comment"))
 
         btn_write_comment_answer.setOnClickListener {
+            if(checkSwearing(write_comment_answer.text.toString())){
+                Toast.makeText(this, "욕설은 금지입니다!", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
 
             if(write_comment_answer.text.toString().isEmpty()){
+                Toast.makeText(this, "댓글을 적어주세요", Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
             if(intent.getBooleanExtra("isModify", false)) {
@@ -69,6 +76,27 @@ class AnswerCommentActivity : AppCompatActivity() {
                 })
             }
         }
+    }
+
+    private fun checkSwearing(text : String) : Boolean {
+        var isSwearing = false
+        RetrofitHelper().getCheckAPI().checkSwearing(text = text).enqueue(object : Callback<GetResponse<String>>{
+            override fun onResponse(
+                call: Call<GetResponse<String>>,
+                response: Response<GetResponse<String>>
+            ) {
+                if (response.isSuccessful){
+                    if(response.body()!!.status == 200){
+                        isSwearing = true
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<GetResponse<String>>, t: Throwable) {}
+
+        })
+
+        return isSwearing
     }
 
     private fun modify(text : String){

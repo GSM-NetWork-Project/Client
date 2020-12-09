@@ -3,9 +3,11 @@ package com.example.client.question
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.client.R
 import com.example.client.answer.ShowAnswerCommentActivity
+import com.example.client.api.DTO.GetResponse
 import com.example.client.api.DTO.Status
 import com.example.client.api.RetrofitHelper
 import kotlinx.android.synthetic.main.activity_answer_comment.*
@@ -24,68 +26,86 @@ class QuestionCommentActivity : AppCompatActivity() {
         write_comment_question.setText(intent.getStringExtra("comment"))
 
         btn_write_comment.setOnClickListener {
+            if (checkSwearing(write_comment_question.text.toString())) {
+                Toast.makeText(this@QuestionCommentActivity, "욕설은 금지입니다!", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            } else {
+                if (intent.getBooleanExtra("isModify", false)) {
+                    RetrofitHelper().getModifyAPI().modifyQuestionComment(
+                        intent.getIntExtra("question_id", 0),
+                        getID(),
+                        write_comment_question.text.toString()
+                    ).enqueue(object : Callback<Status> {
+                        override fun onResponse(call: Call<Status>, response: Response<Status>) {
+                            if (response.isSuccessful) {
+                                if (response.body()!!.status == 200) {
+                                    val doneDialog = SweetAlertDialog(
+                                        this@QuestionCommentActivity,
+                                        SweetAlertDialog.SUCCESS_TYPE
+                                    )
 
-            if(intent.getBooleanExtra("isModify",false)){
-                RetrofitHelper().getModifyAPI().modifyQuestionComment(intent.getIntExtra("question_id", 0), getID(), write_comment_question.text.toString()).enqueue(object : Callback<Status>{
-                    override fun onResponse(call: Call<Status>, response: Response<Status>) {
-                        if(response.isSuccessful){
-                            if(response.body()!!.status == 200){
-                                val doneDialog = SweetAlertDialog(this@QuestionCommentActivity, SweetAlertDialog.SUCCESS_TYPE)
+                                    doneDialog.setCancelable(false)
 
-                                doneDialog.setCancelable(false)
-
-                                doneDialog.setTitleText("수정이 완료 되었습니다")
-                                    .setConfirmClickListener {
-                                        doneDialog.dismiss()
-                                        val intent = Intent(
-                                            this@QuestionCommentActivity,
-                                            ShowAnswerCommentActivity::class.java
-                                        )
-                                        intent.putExtra("isModify", true)
-                                        setResult(0, intent)
-                                        finish()
-                                    }
-                                    .show()
+                                    doneDialog.setTitleText("수정이 완료 되었습니다")
+                                        .setConfirmClickListener {
+                                            doneDialog.dismiss()
+                                            val intent = Intent(
+                                                this@QuestionCommentActivity,
+                                                ShowAnswerCommentActivity::class.java
+                                            )
+                                            intent.putExtra("isModify", true)
+                                            setResult(0, intent)
+                                            finish()
+                                        }
+                                        .show()
+                                } else {
+                                    showFailModify()
+                                }
                             } else {
                                 showFailModify()
                             }
-                        } else {
+                        }
+
+                        override fun onFailure(call: Call<Status>, t: Throwable) {
                             showFailModify()
                         }
-                    }
 
-                    override fun onFailure(call: Call<Status>, t: Throwable) {
-                        showFailModify()
-                    }
+                    })
+                } else {
+                    RetrofitHelper().getAddAPI().addQuestionComment(
+                        intent.getIntExtra("question_id", 0),
+                        getID(),
+                        write_comment_question.text.toString()
+                    ).enqueue(object : Callback<Status> {
+                        override fun onResponse(call: Call<Status>, response: Response<Status>) {
+                            if (response.isSuccessful) {
+                                if (response.body()!!.status == 200) {
+                                    val doneDialog = SweetAlertDialog(
+                                        this@QuestionCommentActivity,
+                                        SweetAlertDialog.SUCCESS_TYPE
+                                    )
 
-                })
-            } else {
-                RetrofitHelper().getAddAPI().addQuestionComment(intent.getIntExtra("question_id", 0), getID(), write_comment_question.text.toString()).enqueue(object : Callback<Status>{
-                    override fun onResponse(call: Call<Status>, response: Response<Status>) {
-                        if(response.isSuccessful){
-                            if(response.body()!!.status == 200){
-                                val doneDialog = SweetAlertDialog(this@QuestionCommentActivity, SweetAlertDialog.SUCCESS_TYPE)
+                                    doneDialog.setCancelable(false)
 
-                                doneDialog.setCancelable(false)
-
-                                doneDialog.setTitleText("작성이 완료 되었습니다")
-                                    .setConfirmClickListener {
-                                        doneDialog.dismiss()
-                                        finish()
-                                    }
-                                    .show()
+                                    doneDialog.setTitleText("작성이 완료 되었습니다")
+                                        .setConfirmClickListener {
+                                            doneDialog.dismiss()
+                                            finish()
+                                        }
+                                        .show()
+                                } else {
+                                    showFailAdd()
+                                }
                             } else {
                                 showFailAdd()
                             }
-                        } else {
+                        }
+
+                        override fun onFailure(call: Call<Status>, t: Throwable) {
                             showFailAdd()
                         }
-                    }
-
-                    override fun onFailure(call: Call<Status>, t: Throwable) {
-                        showFailAdd()
-                    }
-                })
+                    })
+                }
             }
         }
     }
@@ -100,6 +120,27 @@ class QuestionCommentActivity : AppCompatActivity() {
                 doneDialog.dismiss()
             }
             .show()
+    }
+
+    private fun checkSwearing(text : String) : Boolean {
+        var isSwearing = false
+        RetrofitHelper().getCheckAPI().checkSwearing(text = text).enqueue(object : Callback<GetResponse<String>>{
+            override fun onResponse(
+                call: Call<GetResponse<String>>,
+                response: Response<GetResponse<String>>
+            ) {
+                if (response.isSuccessful){
+                    if(response.body()!!.status == 200){
+                        isSwearing = true
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<GetResponse<String>>, t: Throwable) {}
+
+        })
+
+        return isSwearing
     }
 
     private fun getID() : Int{

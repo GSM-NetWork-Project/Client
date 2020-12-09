@@ -8,8 +8,11 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.client.R
+import com.example.client.api.DTO.CheckQuestion
+import com.example.client.api.DTO.GetResponse
 import com.example.client.api.DTO.Status
 import com.example.client.api.RetrofitHelper
+import com.example.client.dialog.SimilarQuestionDialog
 import kotlinx.android.synthetic.main.activity_write_question.*
 import kotlinx.android.synthetic.main.fragment_slideshow.view.*
 import retrofit2.Call
@@ -42,6 +45,21 @@ class WriteQuestionActivity : AppCompatActivity() {
         }
 
         btn_write_question.setOnClickListener {
+            if (checkSwearing(input_question_title.text.toString()) || checkSwearing(input_question_text.text.toString())) {
+                val dialog =
+                    SweetAlertDialog(this@WriteQuestionActivity, SweetAlertDialog.ERROR_TYPE)
+
+                dialog.setCancelable(false)
+
+                dialog.setTitleText("욕설은 금지입니다!!")
+                    .setConfirmClickListener {
+                        dialog.dismiss()
+                    }
+                    .show()
+                return@setOnClickListener
+            }else if(checkSimilarQuestion(input_question_title.text.toString())) {
+                return@setOnClickListener
+            }
             if(input_question_text.text.toString().length > 250){
                 val dialog = SweetAlertDialog(this@WriteQuestionActivity, SweetAlertDialog.ERROR_TYPE)
 
@@ -64,7 +82,7 @@ class WriteQuestionActivity : AppCompatActivity() {
                     }
                     .show()
                 return@setOnClickListener
-            }else if(input_question_title.text.toString().isEmpty() || input_question_text.text.toString().isEmpty()){
+            } else if(input_question_title.text.toString().isEmpty() || input_question_text.text.toString().isEmpty()){
                 val dialog = SweetAlertDialog(this@WriteQuestionActivity, SweetAlertDialog.ERROR_TYPE)
 
                 dialog.setCancelable(false)
@@ -75,9 +93,9 @@ class WriteQuestionActivity : AppCompatActivity() {
                     }
                     .show()
                 return@setOnClickListener
-            }
-            else {
+            } else {
                 if(intent.getBooleanExtra("isModify",false)){
+
                     RetrofitHelper().getModifyAPI().modifyQuestion(intent.getIntExtra("id",0),getID(), input_question_title.text.toString(), theme, input_question_text.text.toString()).enqueue(object : Callback<Status> {
                         override fun onResponse(call: Call<Status>, response: Response<Status>) {
                             if (response.isSuccessful) {
@@ -201,6 +219,54 @@ class WriteQuestionActivity : AppCompatActivity() {
             }
         }
     }
+
+    private fun showSimilarQuestion(arrayList: ArrayList<CheckQuestion>){
+        val similarQuestionDialog = SimilarQuestionDialog(this@WriteQuestionActivity, arrayList)
+        similarQuestionDialog.show()
+    }
+
+    private fun checkSimilarQuestion(text : String) : Boolean{
+        var isSimillar = false
+        RetrofitHelper().getCheckAPI().checkQuestion(text).enqueue(object : Callback<GetResponse<CheckQuestion>>{
+            override fun onResponse(
+                call: Call<GetResponse<CheckQuestion>>,
+                response: Response<GetResponse<CheckQuestion>>
+            ) {
+                if(response.isSuccessful){
+                    if(response.body()!!.status == 200){
+                        isSimillar = true
+                        showSimilarQuestion(response.body()!!.result)
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<GetResponse<CheckQuestion>>, t: Throwable) {}
+
+        })
+        return isSimillar
+    }
+
+    private fun checkSwearing(text : String) : Boolean {
+        var isSwearing = false
+        RetrofitHelper().getCheckAPI().checkSwearing(text = text).enqueue(object : Callback<GetResponse<String>>{
+            override fun onResponse(
+                call: Call<GetResponse<String>>,
+                response: Response<GetResponse<String>>
+            ) {
+                if (response.isSuccessful){
+                    if(response.body()!!.status == 200){
+                        isSwearing = true
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<GetResponse<String>>, t: Throwable) {}
+
+        })
+
+        return isSwearing
+    }
+
     private fun getID() : Int{
         val sp = getSharedPreferences("user", MODE_PRIVATE)
         return sp.getInt("id", 0)
