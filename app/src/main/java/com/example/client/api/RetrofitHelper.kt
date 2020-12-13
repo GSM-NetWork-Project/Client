@@ -16,7 +16,7 @@ class RetrofitHelper {
         .build()
 
     val retrofit: Retrofit = Retrofit.Builder()
-        .baseUrl("https://0beee6b14e22.ngrok.io/")
+        .baseUrl("https://def3c747ac93.ngrok.io/")      //ngrok를 통한 임시 서버 배포 (지속적인 변경 필요)
         .client(okHttpClient)
         .addConverterFactory(GsonConverterFactory.create())
         .build()

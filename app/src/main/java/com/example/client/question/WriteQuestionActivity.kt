@@ -3,6 +3,7 @@ package com.example.client.question
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -84,24 +85,8 @@ class WriteQuestionActivity : AppCompatActivity() {
                     .show()
                 return@setOnClickListener
             } else {
-                if (checkSwearing(input_question_title.text.toString()) || checkSwearing(
-                        input_question_text.text.toString()
-                    )
-                ) {
-                    val dialog =
-                        SweetAlertDialog(this@WriteQuestionActivity, SweetAlertDialog.ERROR_TYPE)
-
-                    dialog.setCancelable(false)
-
-                    dialog.setTitleText("욕설은 금지입니다!!")
-                        .setConfirmClickListener {
-                            dialog.dismiss()
-                        }
-                        .show()
-                    return@setOnClickListener
-                } else {
-                    checkSimilarQuestion(input_question_title.text.toString(), theme)
-                }
+                checkSwearing(input_question_text.text.toString(), null)
+                checkSwearing(input_question_title.text.toString(), theme)
             }
         }
     }
@@ -120,6 +105,7 @@ class WriteQuestionActivity : AppCompatActivity() {
                 if(response.isSuccessful){
                     if(response.body()!!.status == 200){
                         arrayList = response.body()!!.result
+                        Log.d("ARRAYLIST", arrayList.toString())
                         showSimilarQuestion(arrayList)
                     } else {
                         if (intent.getBooleanExtra("isModify", false)) {
@@ -292,8 +278,7 @@ class WriteQuestionActivity : AppCompatActivity() {
         })
     }
 
-    private fun checkSwearing(text : String) : Boolean {
-        var isSwearing = false
+    private fun checkSwearing(text : String, theme: String?){
         RetrofitHelper().getCheckAPI().checkSwearing(text = text).enqueue(object : Callback<GetResponse<String>>{
             override fun onResponse(
                 call: Call<GetResponse<String>>,
@@ -301,7 +286,22 @@ class WriteQuestionActivity : AppCompatActivity() {
             ) {
                 if (response.isSuccessful){
                     if(response.body()!!.status == 200){
-                        isSwearing = true
+                        val dialog = SweetAlertDialog(
+                            this@WriteQuestionActivity,
+                            SweetAlertDialog.ERROR_TYPE
+                        )
+
+                        dialog.setCancelable(false)
+
+                        dialog.setTitleText("욕설은 금지입니다!")
+                            .setConfirmClickListener {
+                                dialog.dismiss()
+                            }
+                            .show()
+                    } else {
+                        if(theme != null){
+                            checkSimilarQuestion(text, theme)
+                        }
                     }
                 }
             }
@@ -310,7 +310,6 @@ class WriteQuestionActivity : AppCompatActivity() {
 
         })
 
-        return isSwearing
     }
 
     private fun getID() : Int{
