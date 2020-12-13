@@ -3,13 +3,17 @@ package com.example.client.question
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.client.R
+import com.example.client.api.DTO.CheckQuestion
+import com.example.client.api.DTO.GetResponse
 import com.example.client.api.DTO.Status
 import com.example.client.api.RetrofitHelper
+import com.example.client.dialog.SimilarQuestionDialog
 import kotlinx.android.synthetic.main.activity_write_question.*
 import kotlinx.android.synthetic.main.fragment_slideshow.view.*
 import retrofit2.Call
@@ -18,9 +22,13 @@ import retrofit2.Response
 import retrofit2.Retrofit
 
 class WriteQuestionActivity : AppCompatActivity() {
+
+    var arrayList = ArrayList<CheckQuestion>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_write_question)
+
 
         var theme = "상식"
 
@@ -42,6 +50,7 @@ class WriteQuestionActivity : AppCompatActivity() {
         }
 
         btn_write_question.setOnClickListener {
+
             if(input_question_text.text.toString().length > 250){
                 val dialog = SweetAlertDialog(this@WriteQuestionActivity, SweetAlertDialog.ERROR_TYPE)
 
@@ -64,7 +73,7 @@ class WriteQuestionActivity : AppCompatActivity() {
                     }
                     .show()
                 return@setOnClickListener
-            }else if(input_question_title.text.toString().isEmpty() || input_question_text.text.toString().isEmpty()){
+            } else if(input_question_title.text.toString().isEmpty() || input_question_text.text.toString().isEmpty()){
                 val dialog = SweetAlertDialog(this@WriteQuestionActivity, SweetAlertDialog.ERROR_TYPE)
 
                 dialog.setCancelable(false)
@@ -75,32 +84,103 @@ class WriteQuestionActivity : AppCompatActivity() {
                     }
                     .show()
                 return@setOnClickListener
+            } else {
+                checkSwearing(input_question_text.text.toString(), null)
+                checkSwearing(input_question_title.text.toString(), theme)
             }
-            else {
-                if(intent.getBooleanExtra("isModify",false)){
-                    RetrofitHelper().getModifyAPI().modifyQuestion(intent.getIntExtra("id",0),getID(), input_question_title.text.toString(), theme, input_question_text.text.toString()).enqueue(object : Callback<Status> {
-                        override fun onResponse(call: Call<Status>, response: Response<Status>) {
-                            if (response.isSuccessful) {
-                                if (response.body()!!.status == 200) {
-                                    val dialog = SweetAlertDialog(
-                                        this@WriteQuestionActivity,
-                                        SweetAlertDialog.SUCCESS_TYPE
-                                    )
+        }
+    }
 
-                                    dialog.setCancelable(false)
+    private fun showSimilarQuestion(arrayList: ArrayList<CheckQuestion>){
+        val similarQuestionDialog = SimilarQuestionDialog(this@WriteQuestionActivity, arrayList)
+        similarQuestionDialog.show()
+    }
 
-                                    dialog.setTitleText("수정에 성공하였습니다")
-                                        .setConfirmClickListener {
-                                            val intent = Intent(this@WriteQuestionActivity, ShowQuestionActivity::class.java)
-                                            intent.putExtra("title", input_question_title.text.toString())
-                                            intent.putExtra("text", input_question_text.text.toString())
-                                            intent.putExtra("owner_id", getID())
-                                            setResult(0,intent)
-                                            finish()
-                                            dialog.dismiss()
+    private fun checkSimilarQuestion(text : String, theme : String){
+        RetrofitHelper().getCheckAPI().checkQuestion(text).enqueue(object : Callback<GetResponse<CheckQuestion>>{
+            override fun onResponse(
+                call: Call<GetResponse<CheckQuestion>>,
+                response: Response<GetResponse<CheckQuestion>>
+            ) {
+                if(response.isSuccessful){
+                    if(response.body()!!.status == 200){
+                        arrayList = response.body()!!.result
+                        Log.d("ARRAYLIST", arrayList.toString())
+                        showSimilarQuestion(arrayList)
+                    } else {
+                        if (intent.getBooleanExtra("isModify", false)) {
+
+                            RetrofitHelper().getModifyAPI().modifyQuestion(
+                                intent.getIntExtra("id", 0),
+                                getID(),
+                                input_question_title.text.toString(),
+                                theme,
+                                input_question_text.text.toString()
+                            ).enqueue(object : Callback<Status> {
+                                override fun onResponse(
+                                    call: Call<Status>,
+                                    response: Response<Status>
+                                ) {
+                                    if (response.isSuccessful) {
+                                        if (response.body()!!.status == 200) {
+                                            val dialog = SweetAlertDialog(
+                                                this@WriteQuestionActivity,
+                                                SweetAlertDialog.SUCCESS_TYPE
+                                            )
+
+                                            dialog.setCancelable(false)
+
+                                            dialog.setTitleText("수정에 성공하였습니다")
+                                                .setConfirmClickListener {
+                                                    val intent = Intent(
+                                                        this@WriteQuestionActivity,
+                                                        ShowQuestionActivity::class.java
+                                                    )
+                                                    intent.putExtra(
+                                                        "title",
+                                                        input_question_title.text.toString()
+                                                    )
+                                                    intent.putExtra(
+                                                        "text",
+                                                        input_question_text.text.toString()
+                                                    )
+                                                    intent.putExtra("owner_id", getID())
+                                                    setResult(0, intent)
+                                                    finish()
+                                                    dialog.dismiss()
+                                                }
+                                                .show()
+                                        } else {
+                                            val dialog = SweetAlertDialog(
+                                                this@WriteQuestionActivity,
+                                                SweetAlertDialog.ERROR_TYPE
+                                            )
+
+                                            dialog.setCancelable(false)
+
+                                            dialog.setTitleText("수정에 실패하였습니다")
+                                                .setConfirmClickListener {
+                                                    dialog.dismiss()
+                                                }
+                                                .show()
                                         }
-                                        .show()
-                                } else {
+                                    } else {
+                                        val dialog = SweetAlertDialog(
+                                            this@WriteQuestionActivity,
+                                            SweetAlertDialog.ERROR_TYPE
+                                        )
+
+                                        dialog.setCancelable(false)
+
+                                        dialog.setTitleText("수정에 실패하였습니다")
+                                            .setConfirmClickListener {
+                                                dialog.dismiss()
+                                            }
+                                            .show()
+                                    }
+                                }
+
+                                override fun onFailure(call: Call<Status>, t: Throwable) {
                                     val dialog = SweetAlertDialog(
                                         this@WriteQuestionActivity,
                                         SweetAlertDialog.ERROR_TYPE
@@ -114,54 +194,69 @@ class WriteQuestionActivity : AppCompatActivity() {
                                         }
                                         .show()
                                 }
-                            } else {
-                                val dialog = SweetAlertDialog(
-                                    this@WriteQuestionActivity,
-                                    SweetAlertDialog.ERROR_TYPE
-                                )
+                            })
 
-                                dialog.setCancelable(false)
+                        } else {
+                            RetrofitHelper().getAddAPI().addQuestion(
+                                getID(),
+                                input_question_title.text.toString(),
+                                theme,
+                                input_question_text.text.toString()
+                            ).enqueue(object : Callback<Status> {
+                                override fun onResponse(
+                                    call: Call<Status>,
+                                    response: Response<Status>
+                                ) {
+                                    if (response.isSuccessful) {
+                                        if (response.body()!!.status == 200) {
+                                            val dialog = SweetAlertDialog(
+                                                this@WriteQuestionActivity,
+                                                SweetAlertDialog.SUCCESS_TYPE
+                                            )
 
-                                dialog.setTitleText("수정에 실패하였습니다")
-                                    .setConfirmClickListener {
-                                        dialog.dismiss()
-                                    }
-                                    .show()
-                            }
-                        }
+                                            dialog.setCancelable(false)
 
-                        override fun onFailure(call: Call<Status>, t: Throwable) {
-                            val dialog = SweetAlertDialog(
-                                this@WriteQuestionActivity,
-                                SweetAlertDialog.ERROR_TYPE
-                            )
+                                            dialog.setTitleText("작성에 성공하였습니다")
+                                                .setConfirmClickListener {
+                                                    finish()
+                                                    dialog.dismiss()
+                                                }
+                                                .show()
+                                        } else {
+                                            val dialog = SweetAlertDialog(
+                                                this@WriteQuestionActivity,
+                                                SweetAlertDialog.ERROR_TYPE
+                                            )
 
-                            dialog.setCancelable(false)
+                                            dialog.setCancelable(false)
 
-                            dialog.setTitleText("수정에 실패하였습니다")
-                                .setConfirmClickListener {
-                                    dialog.dismiss()
-                                }
-                                .show()
-                        } })
-
-                    } else {
-                    RetrofitHelper().getAddAPI().addQuestion(getID(), input_question_title.text.toString(), theme, input_question_text.text.toString()).enqueue(object : Callback<Status>{
-                        override fun onResponse(call: Call<Status>, response: Response<Status>) {
-                            if(response.isSuccessful){
-                                if(response.body()!!.status == 200){
-                                    val dialog = SweetAlertDialog(this@WriteQuestionActivity, SweetAlertDialog.SUCCESS_TYPE)
-
-                                    dialog.setCancelable(false)
-
-                                    dialog.setTitleText("작성에 성공하였습니다")
-                                        .setConfirmClickListener {
-                                            finish()
-                                            dialog.dismiss()
+                                            dialog.setTitleText("작성에 실패하였습니다")
+                                                .setConfirmClickListener {
+                                                    dialog.dismiss()
+                                                }
+                                                .show()
                                         }
-                                        .show()
-                                } else {
-                                    val dialog = SweetAlertDialog(this@WriteQuestionActivity, SweetAlertDialog.ERROR_TYPE)
+                                    } else {
+                                        val dialog = SweetAlertDialog(
+                                            this@WriteQuestionActivity,
+                                            SweetAlertDialog.ERROR_TYPE
+                                        )
+
+                                        dialog.setCancelable(false)
+
+                                        dialog.setTitleText("작성에 실패하였습니다")
+                                            .setConfirmClickListener {
+                                                dialog.dismiss()
+                                            }
+                                            .show()
+                                    }
+                                }
+
+                                override fun onFailure(call: Call<Status>, t: Throwable) {
+                                    val dialog = SweetAlertDialog(
+                                        this@WriteQuestionActivity,
+                                        SweetAlertDialog.ERROR_TYPE
+                                    )
 
                                     dialog.setCancelable(false)
 
@@ -171,36 +266,52 @@ class WriteQuestionActivity : AppCompatActivity() {
                                         }
                                         .show()
                                 }
-                            } else {
-                                val dialog = SweetAlertDialog(this@WriteQuestionActivity, SweetAlertDialog.ERROR_TYPE)
 
-                                dialog.setCancelable(false)
-
-                                dialog.setTitleText("작성에 실패하였습니다")
-                                    .setConfirmClickListener {
-                                        dialog.dismiss()
-                                    }
-                                    .show()
-                            }
+                            })
                         }
-
-                        override fun onFailure(call: Call<Status>, t: Throwable) {
-                            val dialog = SweetAlertDialog(this@WriteQuestionActivity, SweetAlertDialog.ERROR_TYPE)
-
-                            dialog.setCancelable(false)
-
-                            dialog.setTitleText("작성에 실패하였습니다")
-                                .setConfirmClickListener {
-                                    dialog.dismiss()
-                                }
-                                .show()
-                        }
-
-                    })
+                    }
                 }
             }
-        }
+
+            override fun onFailure(call: Call<GetResponse<CheckQuestion>>, t: Throwable) {}
+
+        })
     }
+
+    private fun checkSwearing(text : String, theme: String?){
+        RetrofitHelper().getCheckAPI().checkSwearing(text = text).enqueue(object : Callback<GetResponse<String>>{
+            override fun onResponse(
+                call: Call<GetResponse<String>>,
+                response: Response<GetResponse<String>>
+            ) {
+                if (response.isSuccessful){
+                    if(response.body()!!.status == 200){
+                        val dialog = SweetAlertDialog(
+                            this@WriteQuestionActivity,
+                            SweetAlertDialog.ERROR_TYPE
+                        )
+
+                        dialog.setCancelable(false)
+
+                        dialog.setTitleText("욕설은 금지입니다!")
+                            .setConfirmClickListener {
+                                dialog.dismiss()
+                            }
+                            .show()
+                    } else {
+                        if(theme != null){
+                            checkSimilarQuestion(text, theme)
+                        }
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<GetResponse<String>>, t: Throwable) {}
+
+        })
+
+    }
+
     private fun getID() : Int{
         val sp = getSharedPreferences("user", MODE_PRIVATE)
         return sp.getInt("id", 0)

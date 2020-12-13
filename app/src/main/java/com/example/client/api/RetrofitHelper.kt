@@ -1,9 +1,6 @@
 package com.example.client.api
 
-import com.example.client.api.API.AddAPI
-import com.example.client.api.API.DeleteAPI
-import com.example.client.api.API.GetAPI
-import com.example.client.api.API.ModifyAPI
+import com.example.client.api.API.*
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -19,7 +16,7 @@ class RetrofitHelper {
         .build()
 
     val retrofit: Retrofit = Retrofit.Builder()
-        .baseUrl("http://c379c2cc8cb9.ngrok.io/")
+        .baseUrl("https://def3c747ac93.ngrok.io/")      //ngrok를 통한 임시 서버 배포 (지속적인 변경 필요)
         .client(okHttpClient)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
@@ -28,5 +25,6 @@ class RetrofitHelper {
     fun getGetAPI() : GetAPI = retrofit.create(GetAPI::class.java)
     fun getModifyAPI() : ModifyAPI = retrofit.create(ModifyAPI::class.java)
     fun getDeleteAPI() : DeleteAPI = retrofit.create(DeleteAPI::class.java)
+    fun getCheckAPI() : CheckAPI = retrofit.create(CheckAPI::class.java)
 
 }

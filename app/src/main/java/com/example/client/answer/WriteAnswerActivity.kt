@@ -27,6 +27,18 @@ class WriteAnswerActivity : AppCompatActivity() {
         write_answer_text.setText(intent.getStringExtra("edit_answer"))
 
         btn_write_answer.setOnClickListener {
+            if(checkSwearing(write_answer_text.text.toString())){
+                val dialog = SweetAlertDialog(this@WriteAnswerActivity, SweetAlertDialog.ERROR_TYPE)
+
+                dialog.setCancelable(false)
+
+                dialog.setTitleText("욕설은 금지입니다!!")
+                    .setConfirmClickListener {
+                        dialog.dismiss()
+                    }
+                    .show()
+                return@setOnClickListener
+            }
             if(write_answer_text.text.toString().length > 250) {
                 val dialog =
                     SweetAlertDialog(this@WriteAnswerActivity, SweetAlertDialog.ERROR_TYPE)
@@ -153,6 +165,27 @@ class WriteAnswerActivity : AppCompatActivity() {
             }
         }
 
+    }
+
+    private fun checkSwearing(text : String) : Boolean {
+        var isSwearing = false
+        RetrofitHelper().getCheckAPI().checkSwearing(text = text).enqueue(object : Callback<GetResponse<String>>{
+            override fun onResponse(
+                call: Call<GetResponse<String>>,
+                response: Response<GetResponse<String>>
+            ) {
+                if (response.isSuccessful){
+                    if(response.body()!!.status == 200){
+                        isSwearing = true
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<GetResponse<String>>, t: Throwable) {}
+
+        })
+
+        return isSwearing
     }
 
     private fun setQuestion(id : Int){
