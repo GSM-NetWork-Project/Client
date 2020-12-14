@@ -31,7 +31,8 @@
             android:id="@+id/signUpID"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:hint="아이디 또는 이메일" />
+            android:hint="아이디 또는 이메일"
+            android:inputType="textEmailAddress"/>
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
