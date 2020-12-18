@@ -6,6 +6,7 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.client.R
@@ -39,54 +40,72 @@ class ChangeNickName(val id : Int, context: Context, val view : View, val activi
                 .setTitleText("닉네임 변경 중")
                 .setCancelable(false)
             sweetAlertDialog.show()
-            RetrofitHelper().getGetAPI().getUser(name = editText.text.toString()).enqueue(object : Callback<GetResponse<UserResponse>>{
+            RetrofitHelper().getCheckAPI().checkSwearing(editText.text.toString()).enqueue(object : Callback<GetResponse<String>>{
                 override fun onResponse(
-                    call: Call<GetResponse<UserResponse>>,
-                    response: Response<GetResponse<UserResponse>>
+                    call: Call<GetResponse<String>>,
+                    response: Response<GetResponse<String>>
                 ) {
                     if(response.isSuccessful){
-                        if(response.body()!!.status == 500){
-                            RetrofitHelper().getModifyAPI().modifyUser(id = id, name = editText.text.toString()).enqueue(object : Callback<Status>{
+                        if(response.body()!!.status == 200){
+                            sweetAlertDialog.dismiss()
+                            Toast.makeText(mContext, "욕설은 금지입니다", Toast.LENGTH_LONG).show()
+                        } else {
+                            RetrofitHelper().getGetAPI().getUser(name = editText.text.toString()).enqueue(object : Callback<GetResponse<UserResponse>>{
                                 override fun onResponse(
-                                    call: Call<Status>,
-                                    response: Response<Status>
+                                    call: Call<GetResponse<UserResponse>>,
+                                    response: Response<GetResponse<UserResponse>>
                                 ) {
                                     if(response.isSuccessful){
-                                        if(response.body()!!.status == 200){
-                                            sweetAlertDialog.dismiss()
+                                        if(response.body()!!.status == 500){
+                                            RetrofitHelper().getModifyAPI().modifyUser(id = id, name = editText.text.toString()).enqueue(object : Callback<Status>{
+                                                override fun onResponse(
+                                                    call: Call<Status>,
+                                                    response: Response<Status>
+                                                ) {
+                                                    if(response.isSuccessful){
+                                                        if(response.body()!!.status == 200){
+                                                            sweetAlertDialog.dismiss()
 
-                                            val dialog = SweetAlertDialog(mContext, SweetAlertDialog.SUCCESS_TYPE)
+                                                            val dialog = SweetAlertDialog(mContext, SweetAlertDialog.SUCCESS_TYPE)
 
-                                            dialog.setCancelable(false)
+                                                            dialog.setCancelable(false)
 
-                                            dialog.setTitleText("닉네임 변경이 완료 되었습니다")
-                                                .setConfirmClickListener {
-                                                    if(view.myNickname != null) {
-                                                        view.myNickname.text =
-                                                            editText.text.toString()
+                                                            dialog.setTitleText("닉네임 변경이 완료 되었습니다")
+                                                                .setConfirmClickListener {
+                                                                    if(view.myNickname != null) {
+                                                                        view.myNickname.text =
+                                                                            editText.text.toString()
+                                                                    }
+                                                                    setUser()
+
+                                                                    dialog.dismiss()
+                                                                    dismiss()
+                                                                }
+                                                                .show()
+                                                        }
                                                     }
-                                                    setUser()
-
-                                                    dialog.dismiss()
-                                                    dismiss()
                                                 }
-                                                .show()
+                                                override fun onFailure(call: Call<Status>, t: Throwable) {
+                                                    showFailDialog(sweetAlertDialog)
+                                                }
+                                            })
+                                        } else {
+                                            showFailDialog(sweetAlertDialog)
                                         }
                                     }
                                 }
-                                override fun onFailure(call: Call<Status>, t: Throwable) {
+                                override fun onFailure(call: Call<GetResponse<UserResponse>>, t: Throwable) {
                                     showFailDialog(sweetAlertDialog)
                                 }
                             })
-                        } else {
-                            showFailDialog(sweetAlertDialog)
                         }
                     }
                 }
-                override fun onFailure(call: Call<GetResponse<UserResponse>>, t: Throwable) {
-                    showFailDialog(sweetAlertDialog)
-                }
+
+                override fun onFailure(call: Call<GetResponse<String>>, t: Throwable) {}
+
             })
+
         }
 
         btn_cancel_change.setOnClickListener {

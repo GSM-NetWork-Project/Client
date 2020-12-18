@@ -42,8 +42,7 @@ class QuestionCommentActivity : AppCompatActivity() {
             .show()
     }
 
-    private fun checkSwearing(text : String) : Boolean {
-        var isSwearing = false
+    private fun checkSwearing(text : String) {
         RetrofitHelper().getCheckAPI().checkSwearing(text = text).enqueue(object : Callback<GetResponse<String>>{
             override fun onResponse(
                 call: Call<GetResponse<String>>,
@@ -136,8 +135,6 @@ class QuestionCommentActivity : AppCompatActivity() {
             override fun onFailure(call: Call<GetResponse<String>>, t: Throwable) {}
 
         })
-
-        return isSwearing
     }
 
     private fun getID() : Int{

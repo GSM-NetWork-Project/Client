@@ -58,29 +58,51 @@ class SignUpActivity : AppCompatActivity() {
         }
 
         checkDuplicateNickName.setOnClickListener {
-            service.getGetAPI().getUser(name = signUpName.text.toString())
-                .enqueue(object : Callback<GetResponse<UserResponse>> {
-                    override fun onResponse(
-                        call: Call<GetResponse<UserResponse>>,
-                        response: Response<GetResponse<UserResponse>>
-                    ) {
-                        if (response.isSuccessful) {
-                            isDuplicateNickname = response.body()!!.status == 200
-                            signUpNameLayout.error = if (isDuplicateNickname) {
-                                "중복된 닉네임입니다"
-                            } else {
-                                null
-                            }
-                            if (!isDuplicateNickname){
-                                Toast.makeText(this@SignUpActivity, "사용 가능한 닉네임 입니다", Toast.LENGTH_LONG).show()
-                            }
+            service.getCheckAPI().checkSwearing(signUpName.text.toString()).enqueue(object : Callback<GetResponse<String>>{
+                override fun onResponse(
+                    call: Call<GetResponse<String>>,
+                    response: Response<GetResponse<String>>
+                ) {
+                    if(response.isSuccessful){
+                        signUpNameLayout.error = if(response.body()!!.status == 200){
+                            "중복된 닉네임입니다"
+                        } else {
+                            null
+                        }
+                        if(response.body()!!.status != 200){
+                            service.getGetAPI().getUser(name = signUpName.text.toString())
+                                .enqueue(object : Callback<GetResponse<UserResponse>> {
+                                    override fun onResponse(
+                                        call: Call<GetResponse<UserResponse>>,
+                                        response: Response<GetResponse<UserResponse>>
+                                    ) {
+                                        if (response.isSuccessful) {
+                                            isDuplicateNickname = response.body()!!.status == 200
+                                            signUpNameLayout.error = if (isDuplicateNickname) {
+                                                "중복된 닉네임입니다"
+                                            } else {
+                                                null
+                                            }
+                                            if (!isDuplicateNickname){
+                                                Toast.makeText(this@SignUpActivity, "사용 가능한 닉네임 입니다", Toast.LENGTH_LONG).show()
+                                            }
+                                        }
+                                    }
+
+                                    override fun onFailure(call: Call<GetResponse<UserResponse>>, t: Throwable) {
+                                        Log.d("TAG", t.toString())
+                                    }
+                                })
                         }
                     }
+                }
 
-                    override fun onFailure(call: Call<GetResponse<UserResponse>>, t: Throwable) {
-                        Log.d("TAG", t.toString())
-                    }
-                })
+                override fun onFailure(call: Call<GetResponse<String>>, t: Throwable) {
+                    TODO("Not yet implemented")
+                }
+
+            })
+
         }
 
         textWatcher()

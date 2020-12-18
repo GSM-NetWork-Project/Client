@@ -28,58 +28,19 @@ class AnswerCommentActivity : AppCompatActivity() {
         write_comment_answer.setText(intent.getStringExtra("comment"))
 
         btn_write_comment_answer.setOnClickListener {
-            if(checkSwearing(write_comment_answer.text.toString())){
-                Toast.makeText(this, "욕설은 금지입니다!", Toast.LENGTH_LONG).show()
-                return@setOnClickListener
-            }
+
 
             if(write_comment_answer.text.toString().isEmpty()){
                 Toast.makeText(this, "댓글을 적어주세요", Toast.LENGTH_LONG).show()
                 return@setOnClickListener
-            }
-            if(intent.getBooleanExtra("isModify", false)) {
-                //댓글 수정
-
-                if (write_comment_answer.text.toString().isEmpty()) {
-                    return@setOnClickListener
-                } else {
-                    modify(write_comment_answer.text.toString())
-                }
             } else {
-                //댓글 추가1
-                RetrofitHelper().getAddAPI().addAnswerComment(intent.getIntExtra("answer_id", 0), getID(), findViewById<EditText>(R.id.write_comment_answer).text.toString()).enqueue(object : Callback<Status>{
-                    override fun onResponse(call: Call<Status>, response: Response<Status>) {
-                        if(response.isSuccessful){
-                            if(response.body()!!.status == 200){
-                                val doneDialog = SweetAlertDialog(this@AnswerCommentActivity, SweetAlertDialog.SUCCESS_TYPE)
-
-                                doneDialog.setCancelable(false)
-
-                                doneDialog.setTitleText("작성이 완료 되었습니다")
-                                    .setConfirmClickListener {
-                                        doneDialog.dismiss()
-                                        finish()
-                                    }
-                                    .show()
-                            } else {
-                                Log.d("TESt", response.body()!!.status.toString())
-                                showFailAdd()
-                            }
-                        } else {
-                            showFailAdd()
-                        }
-                    }
-
-                    override fun onFailure(call: Call<Status>, t: Throwable) {
-                        showFailAdd()
-                    }
-                })
+                checkSwearing(write_comment_answer.text.toString())
             }
+
         }
     }
 
-    private fun checkSwearing(text : String) : Boolean {
-        var isSwearing = false
+    private fun checkSwearing(text : String){
         RetrofitHelper().getCheckAPI().checkSwearing(text = text).enqueue(object : Callback<GetResponse<String>>{
             override fun onResponse(
                 call: Call<GetResponse<String>>,
@@ -87,7 +48,20 @@ class AnswerCommentActivity : AppCompatActivity() {
             ) {
                 if (response.isSuccessful){
                     if(response.body()!!.status == 200){
-                        isSwearing = true
+                        Toast.makeText(this@AnswerCommentActivity, "욕설은 금지입니다!", Toast.LENGTH_LONG).show()
+                    } else {
+                        if(intent.getBooleanExtra("isModify", false)) {
+                            //댓글 수정
+
+                            if (write_comment_answer.text.toString().isEmpty()) {
+                                Toast.makeText(this@AnswerCommentActivity, "댓글을 적어주세요", Toast.LENGTH_LONG).show()
+                            } else {
+                                modify(write_comment_answer.text.toString())
+                            }
+                        } else {
+                            //댓글 추가1
+                            add(text)
+                        }
                     }
                 }
             }
@@ -95,8 +69,36 @@ class AnswerCommentActivity : AppCompatActivity() {
             override fun onFailure(call: Call<GetResponse<String>>, t: Throwable) {}
 
         })
+    }
 
-        return isSwearing
+    private fun add(text : String){
+        RetrofitHelper().getAddAPI().addAnswerComment(intent.getIntExtra("answer_id", 0), getID(), text).enqueue(object : Callback<Status>{
+            override fun onResponse(call: Call<Status>, response: Response<Status>) {
+                if(response.isSuccessful){
+                    if(response.body()!!.status == 200){
+                        val doneDialog = SweetAlertDialog(this@AnswerCommentActivity, SweetAlertDialog.SUCCESS_TYPE)
+
+                        doneDialog.setCancelable(false)
+
+                        doneDialog.setTitleText("작성이 완료 되었습니다")
+                            .setConfirmClickListener {
+                                doneDialog.dismiss()
+                                finish()
+                            }
+                            .show()
+                    } else {
+                        Log.d("TESt", response.body()!!.status.toString())
+                        showFailAdd()
+                    }
+                } else {
+                    showFailAdd()
+                }
+            }
+
+            override fun onFailure(call: Call<Status>, t: Throwable) {
+                showFailAdd()
+            }
+        })
     }
 
     private fun modify(text : String){
